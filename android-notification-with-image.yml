@@ -63,10 +63,9 @@ action:
     repeat:
       for_each: "{{notify_service}}"
       sequence:
-        - service: "{{ repeat.item }}"
+        - action: "{{ repeat.item }}"
           data:
             title: "{{notification_title}}"
             message: "{{ notification_message }}"
-            image: "/api/image_proxy/{{image_entity}}"
-            ttl: 0
-            priority: high
+            data:
+              image: "/api/image_proxy/{{image_entity}}"
