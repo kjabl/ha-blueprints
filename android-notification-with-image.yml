@@ -1,0 +1,72 @@
+blueprint:
+  name: Benachrichtung mit Kamerabild für Frigate
+  description: >
+    Sendet eine Benachrichtigung inklusive Kamerabild für Geräte die sich zu Hause befinden. Außerhaus befindliche Geräte bekommen nur ein Bild wenn sie im VPN verbunden sind.
+  
+  domain: automation
+  input:
+    notify_device:
+      name: zu benachrichtigende Geräte
+      selector:
+        device:
+          multiple: true
+          filter:
+            - integration: mobile_app
+    trigger_entity:
+      name: Auslöser
+      selector:
+        entity:
+          domain: 
+            - binary_sensor
+    kamera_bild:
+      name: Snapshot
+      selector:
+        entity:
+          domain:
+            - image
+    notification_title:
+      name: Titel (optional)
+      default: ""
+    notification_message:
+      name: Nachricht (optional)
+      default: ""
+  
+mode: restart
+max_exceeded: silent
+
+variables:
+  notify_device: !input notify_device
+  trigger_entity: !input trigger_entity
+  image_entity: !input kamera_bild
+  notification_title: !input notification_title
+  notification_message: !input notification_message
+  image_file: '/local/doorbell/{{ expand(trigger_entity)[0].last_changed | as_timestamp  | timestamp_custom("%Y-%m-%d_%H-%M-%S") }}.jpg'
+  notify_service: >-
+        {% if notify_device is iterable and (notify_device is not string and notify_device is not mapping) %}
+          {% set devices = namespace(data = [])%}
+          {% for device in notify_device %}
+            {% set devices.data = devices.data + ["notify.mobile_app_{id}".format(id=device_attr(device,'name')|slugify)] %}
+          {% endfor %}
+          {{ devices.data | list }}
+        {% else %}
+          {{ ["notify.mobile_app_{id}".format(id=device_attr(notify_device,'name')|slugify)] | list }}
+        {% endif %}
+
+trigger:
+  platform: state
+  entity_id: !input trigger_entity
+  from: "off"
+  to: "on"
+
+action:
+  - alias: "Send notifications"
+    repeat:
+      for_each: "{{notify_service}}"
+      sequence:
+        - service: "{{ repeat_item }}"
+          data:
+            title: "{{notification_title}}"
+            message: "{{ notification_message }}"
+            image: "/api/image_proxy/{{image_entity}}"
+            ttl: 0
+            priority: high
