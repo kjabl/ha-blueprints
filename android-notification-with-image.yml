@@ -63,7 +63,7 @@ action:
     repeat:
       for_each: "{{notify_service}}"
       sequence:
-        - service: "{{ repeat_item }}"
+        - service: "{{ repeat.item }}"
           data:
             title: "{{notification_title}}"
             message: "{{ notification_message }}"
