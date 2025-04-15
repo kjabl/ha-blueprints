@@ -11,26 +11,18 @@ blueprint:
           name: Pumpe
           selector:
             entity:
-              filter:
-                device_class: switch
         grosse_lampe:
           name: Lampe
           selector:
             entity:
-              filter:
-                device_class: switch
         zeitplan_grosse_pumpe:
           name: Zeitplan Pumpe
           selector:
             entity:
-              filter:
-                device_class: schedule
         zeitplan_grosse_lampe:
           name: Zeitplan Lampe
           selector:
             entity:
-              filter:
-                device_class: schedule
         laufzeit_grosse_pumpe:
           name: Laufzeit große Pumpe
           selector:
@@ -67,20 +59,14 @@ blueprint:
           name: Pumpe
           selector:
             entity:
-              filter:
-                device_class: switch
         kleine_lampe:
           name: Lampe
           selector:
             entity:
-              filter:
-                device_class: switch
         zeitplan_kleine_pumpe:
           name: Zeitplan Pumpe
           selector:
             entity:
-              filter:
-                device_class: schedule
         min_laufzeit_kleine_pumpe:
           name: Mindestlaufzeit kleine Pumpe
           selector:
