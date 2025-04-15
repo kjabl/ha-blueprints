@@ -2,9 +2,6 @@ blueprint:
   name: Poolsteuerung mit Solar
   domain: automation
 
-  mode: restart
-  max_exceeded: silent
-
   input:
     pumpe_gross:
       name: Große Pumpe
@@ -49,11 +46,13 @@ blueprint:
           selector:
             number:
               min: 0
+              mode: box
         leistung_grosse_lampe:
           name: Leistung große Lampe
           selector:
             number:
               min: 0
+              mode: box
     pumpe_klein:
       name: kleine Pumpe
       description: Inputs in Beziehung zur kleinen Pumpe
@@ -89,11 +88,13 @@ blueprint:
           selector:
             number:
               min: 0
+              mode: box
         leistung_kleine_lampe:
           name: Leistung kleine Lampe
           selector:
             number:
               min: 0
+              mode: box
     solar_leistung:
       name: Leistung Solaranlage
       selector:
