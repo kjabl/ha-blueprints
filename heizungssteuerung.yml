@@ -1,0 +1,196 @@
+blueprint:
+  name: Heizungssteuerung
+  description: Heizungsautomatisierung
+  author: kevin
+  domain: automation
+  input:
+    input_trvs:
+      name: Heizungsventile
+      description: Zu steuernde Heizungsventile
+      selector:
+        entity:
+          filter:
+            - domain:
+              - climate
+          multiple: false
+    input_scheduler_regular:
+      name: Zeitplan (Standard)
+      description: Zeitplan zur Steuerung der Comforttemperatur
+      selector:
+        entity:
+          filter:
+            - domain:
+              - schedule
+          multiple: false
+    input_scheduler_holiday:
+      name: Zeitplan (Frei)
+      description: Zeitplan zur Steuerung der Comforttemperatur an Feiertagen/Urlaub
+      selector:
+        entity:
+          filter:
+            - domain:
+              - schedule
+          multiple: false
+    input_temperature_comfort:
+      name: Komforttemperatur
+      default: 19
+      selector:
+        number:
+          min: 4.5
+          max: 25.0
+          step: 0.5
+          mode: slider
+          unit_of_measurement: °C
+    input_temperature_minimum:
+      name: Eco Temperatur
+      default: 17
+      selector:
+        number:
+          min: 4.5
+          max: 25.0
+          step: 0.5
+          mode: slider
+          unit_of_measurement: °C
+    input_mode_workday:
+      name: Holiday Entity
+      description: Entity welche im Falle eines Feiertages "on" ist.
+      default:
+      selector:
+        entity:
+          multiple: false
+    input_mode_eco:
+      name: Eco Modus
+      selector:
+        entity:
+          filter:
+            - domain:
+              - input_boolean
+          multiple: false
+trigger_variables:
+
+  # SCHEDULER
+  input_scheduler_regular: !input input_scheduler_regular
+  input_scheduler_holiday: !input input_scheduler_holiday
+
+  # MODES
+  input_mode_workday: !input input_mode_workday
+  input_mode_eco: !input input_mode_eco
+
+  # ADDITIONAL SETTINGS
+  is_default_scheduler_configured: "{{ input_scheduler_regular != none }}"
+  is_mode_holiday_configured: "{{ input_scheduler_holiday != none and input_mode_workday != none }}"
+
+trigger:
+  # SYSTEM TIGGERS
+  - platform: homeassistant
+    event: start
+    id: hastart
+
+  - platform: event
+    event_type: automation_reloaded
+
+  # MODE TRIGGERS
+  - platform: state
+    entity_id: !input input_mode_eco
+    id: eco-changed
+  
+  - platform: template
+    id: mode-changed
+    value_template: >
+      {{states(input_trvs)}}
+  
+  # SCHEDULER ON/OFF
+  - platform: template
+    id: scheduler-on
+    value_template: >
+      {% if is_default_scheduler_configured %}
+        {% set active_scheduler = iif(is_mode_holiday_configured and is_state(input_mode_workday, 'off'), input_scheduler_holiday, input_scheduler_regular) %}
+        {{ is_state(active_scheduler, 'on') }}
+      {% else %}
+        false
+      {% endif %}
+  - platform: template
+    id: scheduler-off
+    value_template: >
+      {% if is_default_scheduler_configured %}
+        {% set active_scheduler = iif(is_mode_holiday_configured and is_state(input_mode_workday, 'off'), input_scheduler_holiday, input_scheduler_regular) %}
+        {{ is_state(active_scheduler, 'off') }}
+      {% else %}
+        false
+      {% endif %}
+variables:
+  input_trvs: !input input_trvs
+  input_scheduler_regular: !input input_scheduler_regular
+  input_scheduler_holiday: !input input_scheduler_holiday
+  input_mode_workday: !input input_mode_workday
+  input_temperature_comfort: !input input_temperature_comfort
+  input_temperature_minimum: !input input_temperature_minimum
+
+  # VALVE GROUPS
+  # Die Vorlage verwendet mehrere Gruppen nach Thermostatarten, ich starte mit einer.
+  valves: "{{ expand(input_trvs) | map(attribute='entity_id') | list }}"
+  
+##################################################
+########### C O N D I T I O N S ##################
+##################################################
+
+# Bei einem scheduler Trigger muss die Bedingung erfüllt sein, dass der Modus auf "Auto" steht
+condition:
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: "{{trigger.id == 'mode-changed' or trigger.id == 'eco-changed'}}"
+      - condition: state
+        entity_id: !input input_trvs
+        state: auto
+
+##################################################
+################## A C T I O N ###################
+##################################################
+
+action:
+  # Delay after HA start
+  - if:
+    - condition: trigger
+      id: "hastart"
+    then:
+      - delay: 00:00:30
+  # Setting up variables
+  - variables:
+    # states
+      state_mode_holiday: "{{ input_mode_workday != none and is_state(input_mode_workday, 'off') }}"
+      active_scheduler: "{{ iif(state_mode_holiday, input_scheduler_holiday, input_scheduler_regular) }}" # Zeitplan auswählen, Holiday oder Standard
+      is_mode_holiday_configured: "{{ input_scheduler_holiday != none and input_mode_workday != none and is_state(input_mode_workday, 'off') }}"
+      is_scheduler_on: "{{ active_scheduler != none and states(active_scheduler) == 'on' }}"
+      is_eco_mode: "{{ input_mode_eco != none and is_state(input_mode_eco, 'on') }}"
+
+      is_scheduled_heating: "{{ active_scheduler != none }}"
+
+    # TRV Values
+    # ermitteln ob Comfort Temperatur gesetzt werden soll. Momentan noch extrem simpel
+      set_comfort: >
+        {% if is_scheduler_on == true and is_eco_mode == false %}
+          {{ true }}
+        {% else %}
+          {{ false }}
+        {% endif %}
+
+    # zu setzenden Temperaturwert ermitteln
+      temperature: "{{ iif(set_comfort, input_temperature_comfort, input_temperature_minimum) }}"
+
+# Message malformed: extra keys not allowed @ data['action'][2]['choose'][0]['condition']
+
+  #################################################
+  # ACTIONS
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{false}}"
+        sequence: []
+    default:
+      - service: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: "{{ temperature | float }}"
+        target:
+          entity_id: "{{ valves }}"
