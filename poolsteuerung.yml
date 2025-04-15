@@ -25,6 +25,12 @@ blueprint:
             entity:
               filter:
                 device_class: schedule
+        zeitplan_grosse_lampe:
+          name: Zeitplan Lampe
+          selector:
+            entity:
+              filter:
+                device_class: schedule
         laufzeit_grosse_pumpe:
           name: Laufzeit große Pumpe
           selector:
