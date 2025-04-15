@@ -113,6 +113,14 @@ triggers:
     from: "on"
     to: "off"
     id: grosse_lampe_aus_trigger
+  - trigger: template
+    value_template: >-
+      {{ states('sensor.durchschnitt_leistung') <
+      states('sensor.gesamtleistung_pool') }}
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
 
 variables:
   input_laufzeit_grosse_pumpe: !input laufzeit_grosse_pumpe
