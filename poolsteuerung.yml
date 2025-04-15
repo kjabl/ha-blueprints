@@ -99,69 +99,69 @@ blueprint:
       selector:
         entity:
 
-  triggers:
-    - trigger: state
-      entity_id: !input zeitplan_grosse_pumpe
-      from: "off"
-      to: "on"
-      id: grosse_pumpe_an_trigger
-    - trigger: state
-      entity_id: !input zeitplan_grosse_lampe
-      from: "off"
-      to: "on"
-      id: grosse_lampe_an_trigger
-    - trigger: state
-      entity_id: !input zeitplan_grosse_pumpe
-      from: "on"
-      to: "off"
-      id: grosse_pumpe_aus_trigger
-    - trigger: state
-      entity_id: !input zeitplan_grosse_lampe
-      from: "on"
-      to: "off"
-      id: grosse_lampe_aus_trigger
-  
-  variables:
-    input_laufzeit_grosse_pumpe: !input laufzeit_grosse_pumpe
-    input_laufzeit_grosse_lampe: !input laufzeit_grosse_lampe
-    input_min_laufzeit_grosse_pumpe: !input min_laufzeit_grosse_pumpe
-    input_min_laufzeit_grosse_lampe: !input min_laufzeit_grosse_lampe
-    input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
-    input_leistung_grosse_lampe: !input leistung_grosse_lampe
-    input_zeitplan_grosse_pumpe: !input zeitplan_grosse_pumpe
-    input_zeitplan_grosse_lampe: !input zeitplan_grosse_lampe
-    input_grosse_pumpe: !input grosse_pumpe
-    input_grosse_lampe: !input grosse_lampe
-    input_solarleistung: !input solar_leistung
-    input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
+triggers:
+  - trigger: state
+    entity_id: !input zeitplan_grosse_pumpe
+    from: "off"
+    to: "on"
+    id: grosse_pumpe_an_trigger
+  - trigger: state
+    entity_id: !input zeitplan_grosse_lampe
+    from: "off"
+    to: "on"
+    id: grosse_lampe_an_trigger
+  - trigger: state
+    entity_id: !input zeitplan_grosse_pumpe
+    from: "on"
+    to: "off"
+    id: grosse_pumpe_aus_trigger
+  - trigger: state
+    entity_id: !input zeitplan_grosse_lampe
+    from: "on"
+    to: "off"
+    id: grosse_lampe_aus_trigger
 
-  action:
-    - variables:
-        # Mindestlaufzeiten erreicht?
-        grosse_pumpe_fertig: "{{ input_laufzeit_grosse_pumpe > input_min_laufzeit_grosse_pumpe }}"
-        grosse_lampe_fertig: "{{ input_laufzeit_grosse_lampe > input_min_laufzeit_grosse_lampe }}"
-        # Sollen Geräte laufen?
-        grosse_pumpe_needed: "{{ !grosse_pumpe_fertig and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
-        grosse_lampe_needed: "{{ !grosse_lampe_needed and is_state(input_zeitplan_grosse_lampe, 'on') }}"
-        #benoetigte Geräte
-        needed_devices: >
-          {% set array = namespace(entities=[]) %}
-          {% set array = namespace(off=[]) }
-          {% set energy = 0 %}
-          {% if grosse_pumpe_needed and states(input_solarleistung) > input_leistung_grosse_pumpe %}
-            {% array.entities.append(grosse_pumpe) %}
-            {% energy = energy + input_leistung_grosse_pumpe %}
-          {% else %}
-            {% array.off.append(grosse_pumpe) %}
-          {% endif %}
-          {% if grosse_lampe_needed and states(input_solarleistung) > input_leistung_grosse_lampe %}
-            {% array.entities.append(grosse_lampe) %}
-            {% energy = energy + input_leistung_grosse_lampe %}
-          {% else %}
-            {% array.off.append(grosse_lampe) %}
-          {% endif %}
-          {{ array.entities }}
-    - action: homeassistant.turn_on
-      target: needed_devices.entities
-    - action: homeassistant.turn_off
-      target: needed_devices.off
+variables:
+  input_laufzeit_grosse_pumpe: !input laufzeit_grosse_pumpe
+  input_laufzeit_grosse_lampe: !input laufzeit_grosse_lampe
+  input_min_laufzeit_grosse_pumpe: !input min_laufzeit_grosse_pumpe
+  input_min_laufzeit_grosse_lampe: !input min_laufzeit_grosse_lampe
+  input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
+  input_leistung_grosse_lampe: !input leistung_grosse_lampe
+  input_zeitplan_grosse_pumpe: !input zeitplan_grosse_pumpe
+  input_zeitplan_grosse_lampe: !input zeitplan_grosse_lampe
+  input_grosse_pumpe: !input grosse_pumpe
+  input_grosse_lampe: !input grosse_lampe
+  input_solarleistung: !input solar_leistung
+  input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
+
+action:
+  - variables:
+      # Mindestlaufzeiten erreicht?
+      grosse_pumpe_fertig: "{{ input_laufzeit_grosse_pumpe > input_min_laufzeit_grosse_pumpe }}"
+      grosse_lampe_fertig: "{{ input_laufzeit_grosse_lampe > input_min_laufzeit_grosse_lampe }}"
+      # Sollen Geräte laufen?
+      grosse_pumpe_needed: "{{ !grosse_pumpe_fertig and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
+      grosse_lampe_needed: "{{ !grosse_lampe_needed and is_state(input_zeitplan_grosse_lampe, 'on') }}"
+      #benoetigte Geräte
+      needed_devices: >
+        {% set array = namespace(entities=[]) %}
+        {% set array = namespace(off=[]) }
+        {% set energy = 0 %}
+        {% if grosse_pumpe_needed and states(input_solarleistung) > input_leistung_grosse_pumpe %}
+          {% array.entities.append(grosse_pumpe) %}
+          {% energy = energy + input_leistung_grosse_pumpe %}
+        {% else %}
+          {% array.off.append(grosse_pumpe) %}
+        {% endif %}
+        {% if grosse_lampe_needed and states(input_solarleistung) > input_leistung_grosse_lampe %}
+          {% array.entities.append(grosse_lampe) %}
+          {% energy = energy + input_leistung_grosse_lampe %}
+        {% else %}
+          {% array.off.append(grosse_lampe) %}
+        {% endif %}
+        {{ array.entities }}
+  - action: homeassistant.turn_on
+    target: needed_devices.entities
+  - action: homeassistant.turn_off
+    target: needed_devices.off
