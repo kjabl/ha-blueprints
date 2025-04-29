@@ -200,6 +200,8 @@ action:
         {% endif %}
         {{ array }}
   - action: homeassistant.turn_on
-    target: needed_devices
+    target: 
+      entity_id: needed_devices
   - action: homeassistant.turn_off
-    target: needed_devices
+    target: 
+      entity_id: needed_devices
