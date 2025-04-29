@@ -141,7 +141,7 @@ variables:
   input_laufzeit_kleinelampe: !input laufzeit_kleine_lampe
   input_min_laufzeit_grosse_pumpe: int(!input min_laufzeit_grosse_pumpe) / 60
   input_min_laufzeit_grosse_lampe: int(!input min_laufzeit_grosse_lampe) / 60
-  input_min_laufzeit_kleine_pumpe: "{{int(!input min_laufzeit_kleine_pumpe) / 60}}"
+  input_min_laufzeit_kleine_pumpe: !input min_laufzeit_kleine_pumpe
   input_min_laufzeit_kleine_lampe: int(!input min_laufzeit_kleine_lampe) / 60
   input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
   input_leistung_grosse_lampe: !input leistung_grosse_lampe
@@ -162,7 +162,7 @@ actions:
       # Mindestlaufzeiten erreicht?
       grosse_pumpe_fertig: "{{ input_laufzeit_grosse_pumpe > input_min_laufzeit_grosse_pumpe }}"
       grosse_lampe_fertig: "{{ input_laufzeit_grosse_lampe > input_min_laufzeit_grosse_lampe }}"
-      kleine_pumpe_fertig: "{{ input_laufzeit_kleine_pumpe > input_min_laufzeit_kleine_pumpe }}"
+      kleine_pumpe_fertig: "{{ states('input_laufzeit_kleine_pumpe') > int(states('input_min_laufzeit_kleine_pumpe')) / 60}}"
       kleine_lampe_fertig: "{{ input_laufzeit_kleine_pumpe > input_min_laufzeit_kleine_lampe }}"
       # Sollen Geräte laufen?
       grosse_pumpe_needed: "{{ grosse_pumpe_fertig == false and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
