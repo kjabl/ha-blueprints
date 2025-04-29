@@ -166,7 +166,7 @@ actions:
       kleine_lampe_fertig: "{{ input_laufzeit_kleine_pumpe > input_min_laufzeit_kleine_lampe }}"
       # Sollen Geräte laufen?
       grosse_pumpe_needed: "{{ grosse_pumpe_fertig == false and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
-      grosse_lampe_needed: "{{ grosse_lampe_needed == false and is_state(input_zeitplan_grosse_lampe, 'on') }}"
+      grosse_lampe_needed: "{{ grosse_lampe_fertig == false and is_state(input_zeitplan_grosse_lampe, 'on') }}"
       kleine_pumpe_needed: "{{ kleine_pumpe_fertig == false and is_state(input_zeitplan_kleine_pumpe, 'on') }}"
       kleine_lampe_needed: "{{ kleine_lampe_fertig == false and is_state(input_zeitplan_kleine_lampe, 'on') }}"
       test: "{{ input_min_laufzeit_kleine_pumpe }}"
