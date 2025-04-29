@@ -104,12 +104,12 @@ triggers:
     to: "on"
     id: grosse_lampe_an_trigger
   - trigger: state
-    entity_id: !input zeitplan_grosse_pumpe
+    entity_id: !input zeitplan_kleinepumpe
     from: "on"
     to: "off"
     id: grosse_pumpe_aus_trigger
   - trigger: state
-    entity_id: !input zeitplan_grosse_lampe
+    entity_id: !input zeitplan_kleine_lampe
     from: "on"
     to: "off"
     id: grosse_lampe_aus_trigger
@@ -125,41 +125,66 @@ triggers:
 variables:
   input_laufzeit_grosse_pumpe: !input laufzeit_grosse_pumpe
   input_laufzeit_grosse_lampe: !input laufzeit_grosse_lampe
+  input_laufzeit_kleine_pumpe: !input laufzeit_kleine_pumpe
+  input_laufzeit_kleinelampe: !input laufzeit_kleine_lampe
   input_min_laufzeit_grosse_pumpe: !input min_laufzeit_grosse_pumpe
   input_min_laufzeit_grosse_lampe: !input min_laufzeit_grosse_lampe
+  input_min_laufzeit_kleine_pumpe: !input min_laufzeit_kleine_pumpe
+  input_min_laufzeit_kleine_lampe: !input min_laufzeit_kleine_lampe
   input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
   input_leistung_grosse_lampe: !input leistung_grosse_lampe
+  input_leistung_kleine_pumpe: !input leistung_kleine_pumpe
+  input_leistung_kleine_lampe: !input leistung_kleine_lampe
   input_zeitplan_grosse_pumpe: !input zeitplan_grosse_pumpe
   input_zeitplan_grosse_lampe: !input zeitplan_grosse_lampe
+  imput_zeitplan_kleine_pumpe: !input zeitplan_kleine_pumpe
+  input_zeitplan_kleine_lampe: !input zeitplan_kleine_lampe
   input_grosse_pumpe: !input grosse_pumpe
   input_grosse_lampe: !input grosse_lampe
+  input_kleine_pumpe: !input kleine_pumpe
+  input_kleine_lampe: !input kleine_lampe
   input_solarleistung: !input solar_leistung
-  input_leistung_grosse_pumpe: !input leistung_grosse_pumpe
 
 action:
   - variables:
       # Mindestlaufzeiten erreicht?
       grosse_pumpe_fertig: "{{ input_laufzeit_grosse_pumpe > input_min_laufzeit_grosse_pumpe }}"
       grosse_lampe_fertig: "{{ input_laufzeit_grosse_lampe > input_min_laufzeit_grosse_lampe }}"
+      kleine_pumpe_fertig: "{{ input_laufzeit_kleine_pumpe > input_min_laufzeit_kleine_pumpe }}"
+      kleine_lampe_fertig: "{{ input_laufzeit_kleine_pumpe > input_min_laufzeit_kleine_lampe }}"
       # Sollen Geräte laufen?
       grosse_pumpe_needed: "{{ !grosse_pumpe_fertig and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
       grosse_lampe_needed: "{{ !grosse_lampe_needed and is_state(input_zeitplan_grosse_lampe, 'on') }}"
+      kleine_pumpe_needed: "{{ !kleine_pumpe_fertig and is_state(input_zeitplan_kleine_pumpe, 'on') }}"
+      kleine_lampe_needed: "{{ !kleine_lampe_fertig and is_state(input_zeitplan_kleine_lampe, 'on') }}"
       #benoetigte Geräte
       needed_devices: >
         {% set array = namespace(entities=[]) %}
         {% set array = namespace(off=[]) }
         {% set energy = 0 %}
+        {% if kleine_pumpe_needed and states(input_solarleistung) > input_leistung_kleine_pumpe %}
+          {% array.entities.append(kleine_pumpe) %}
+          {% energy = energy + input_leistung_kleine_pumpe %}
+          {% if kleine_lampe_needed and states(input_solarleistung) > input_leistung_kleine_lampe %}
+            {% array.entities.append(kleinelampe) %}
+            {% energy = energy + input_leistung_kleine_lampe %}
+          {% else %}
+            {% array.off.append(kleine_lampe) %}
+          {% endif %}
+        {% else %}
+          {% array.off.append(kleine_pumpe) %}
+        {% endif %}
         {% if grosse_pumpe_needed and states(input_solarleistung) > input_leistung_grosse_pumpe %}
           {% array.entities.append(grosse_pumpe) %}
-          {% energy = energy + input_leistung_grosse_pumpe %}
+          {% energy = energy + input_leistung_kleine_pumpe %}
+          {% if kleine_lampe_needed and states(input_solarleistung) > input_leistung_kleine_lampe %}
+            {% array.entities.append(grosse_lampe) %}
+            {% energy = energy + input_leistung_grosse_lampe %}
+          {% else %}
+            {% array.off.append(grosse_lampe) %}
+          {% endif %}
         {% else %}
           {% array.off.append(grosse_pumpe) %}
-        {% endif %}
-        {% if grosse_lampe_needed and states(input_solarleistung) > input_leistung_grosse_lampe %}
-          {% array.entities.append(grosse_lampe) %}
-          {% energy = energy + input_leistung_grosse_lampe %}
-        {% else %}
-          {% array.off.append(grosse_lampe) %}
         {% endif %}
         {{ array.entities }}
   - action: homeassistant.turn_on
