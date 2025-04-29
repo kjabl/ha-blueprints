@@ -172,7 +172,7 @@ action:
       #benoetigte Geräte
       needed_devices: >
         {% set array = namespace(entities=[]) %}
-        {% set array = namespace(off=[]) }
+        {% set array = namespace(off=[]) %}
         {% set energy = 0 %}
         {% if kleine_pumpe_needed and states(input_solarleistung) > input_leistung_kleine_pumpe %}
           {% array.entities.append(kleine_pumpe) %}
