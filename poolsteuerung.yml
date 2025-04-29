@@ -67,6 +67,18 @@ blueprint:
           name: Zeitplan Pumpe
           selector:
             entity:
+        zeitplan_kleine_lampe:
+          name: Zeitplan Lampe
+          selector:
+            entity:
+        laufzeit_kleine_pumpe:
+          name: Laufzeit kleine Pumpe
+          selector:
+            entity:
+        laufzeit_kleine_lampe:
+          name: Laufzeit kleine Lampe
+          selector:
+            entity:
         min_laufzeit_kleine_pumpe:
           name: Mindestlaufzeit kleine Pumpe
           selector:
@@ -104,7 +116,7 @@ triggers:
     to: "on"
     id: grosse_lampe_an_trigger
   - trigger: state
-    entity_id: !input zeitplan_kleinepumpe
+    entity_id: !input zeitplan_kleine_pumpe
     from: "on"
     to: "off"
     id: grosse_pumpe_aus_trigger
