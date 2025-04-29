@@ -201,7 +201,7 @@ action:
         {{ array }}
   - action: homeassistant.turn_on
     target: 
-      entity_id: needed_devices
+      entity_id: needed_devices.array
   - action: homeassistant.turn_off
     target: 
-      entity_id: needed_devices
+      entity_id: needed_devices.off
