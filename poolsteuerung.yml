@@ -175,30 +175,30 @@ action:
         {% set array = namespace(off=[]) %}
         {% set energy = 0 %}
         {% if kleine_pumpe_needed and states(input_solarleistung) > input_leistung_kleine_pumpe %}
-          {% array.entities.append(kleine_pumpe) %}
-          {% energy = energy + input_leistung_kleine_pumpe %}
+          {% set array.entities = array.entities + [kleine_pumpe] %}
+          {% set energy = energy + input_leistung_kleine_pumpe %}
           {% if kleine_lampe_needed and states(input_solarleistung) > input_leistung_kleine_lampe %}
-            {% array.entities.append(kleinelampe) %}
-            {% energy = energy + input_leistung_kleine_lampe %}
+            {% set array.entities = array.entities + [kleine_lampe] %}
+            {% set energy = energy + input_leistung_kleine_lampe %}
           {% else %}
-            {% array.off.append(kleine_lampe) %}
+            {% set array.off = array.off + [kleine_lampe] %}
           {% endif %}
         {% else %}
-          {% array.off.append(kleine_pumpe) %}
+          {% set array.off = array.off + [kleine_pumpe] %}
         {% endif %}
         {% if grosse_pumpe_needed and states(input_solarleistung) > input_leistung_grosse_pumpe %}
-          {% array.entities.append(grosse_pumpe) %}
-          {% energy = energy + input_leistung_kleine_pumpe %}
+          {% set array.entities = array.entities + [grosse_pumpe] %}
+          {% set energy = energy + input_leistung_kleine_pumpe %}
           {% if kleine_lampe_needed and states(input_solarleistung) > input_leistung_kleine_lampe %}
-            {% array.entities.append(grosse_lampe) %}
-            {% energy = energy + input_leistung_grosse_lampe %}
+            {% set array.entities = array.entities + [grosse_lampe] %}
+            {% set energy = energy + input_leistung_grosse_lampe %}
           {% else %}
-            {% array.off.append(grosse_lampe) %}
+            {% set array.off = array.off + [grosse_lampe] %}
           {% endif %}
         {% else %}
-          {% array.off.append(grosse_pumpe) %}
+          {% set array.off = array.off + [grosse_pumpe] %}
         {% endif %}
-        {{ array.entities }}
+        {{ array }}
   - action: homeassistant.turn_on
     target: needed_devices.entities
   - action: homeassistant.turn_off
