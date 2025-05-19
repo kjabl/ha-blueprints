@@ -205,4 +205,4 @@ actions:
       entity_id: array.entities
   - action: homeassistant.turn_off
     target:
-      entity_id: array
+      entity_id: array.off
