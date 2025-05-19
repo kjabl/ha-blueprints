@@ -168,7 +168,7 @@ actions:
       grosse_pumpe_fertig: "{{ int(states(input_laufzeit_grosse_pumpe)) > int(states(input_min_laufzeit_grosse_pumpe)) / 60 }}"
       grosse_lampe_fertig: "{{ int(states(input_laufzeit_grosse_lampe)) > int(states(input_min_laufzeit_grosse_lampe)) / 60 }}"
       kleine_pumpe_fertig: "{{ int(states(input_laufzeit_kleine_pumpe)) > int(states(input_min_laufzeit_kleine_pumpe)) / 60 }}"
-      kleine_lampe_fertig: "{{ int(states(input_laufzeit_kleine_pumpe)) > int(states(input_min_laufzeit_kleine_lampe)) / 60 }}"
+      kleine_lampe_fertig: "{{ int(states(input_laufzeit_kleine_lampe)) > int(states(input_min_laufzeit_kleine_lampe)) / 60 }}"
       # Sollen Geräte laufen?
       grosse_pumpe_needed: "{{ grosse_pumpe_fertig == false and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
       grosse_lampe_needed: "{{ grosse_lampe_fertig == false and is_state(input_zeitplan_grosse_lampe, 'on') }}"
