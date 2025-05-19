@@ -103,6 +103,10 @@ blueprint:
       name: Leistung Solaranlage
       selector:
         entity:
+    poolheizung:
+      name: Heizungsmodus
+      selector:
+        entity:
 
 triggers:
   - trigger: state
@@ -156,6 +160,7 @@ variables:
   input_kleine_pumpe: !input kleine_pumpe
   input_kleine_lampe: !input kleine_lampe
   input_solarleistung: !input solar_leistung
+  input_poolheizung: !input poolheizung
 
 actions:
   - variables:
@@ -167,7 +172,7 @@ actions:
       # Sollen Geräte laufen?
       grosse_pumpe_needed: "{{ grosse_pumpe_fertig == false and is_state(input_zeitplan_grosse_pumpe, 'on') }}"
       grosse_lampe_needed: "{{ grosse_lampe_fertig == false and is_state(input_zeitplan_grosse_lampe, 'on') }}"
-      kleine_pumpe_needed: "{{ kleine_pumpe_fertig == false and is_state(input_zeitplan_kleine_pumpe, 'on') }}"
+      kleine_pumpe_needed: "{{ is_state(input_poolheizung, 'on') or (kleine_pumpe_fertig == false and is_state(input_zeitplan_kleine_pumpe, 'on')) }}"
       kleine_lampe_needed: "{{ kleine_lampe_fertig == false and is_state(input_zeitplan_kleine_lampe, 'on') }}"
       test2: "{{ input_laufzeit_kleine_pumpe }}"
       #benoetigte Geräte
