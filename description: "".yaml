@@ -1,0 +1,26 @@
+description: ""
+alias: Poolsteuerung mit Solar
+use_blueprint:
+  path: kjabl/poolsteuerung.yml.yaml
+  input:
+    grosse_pumpe: switch.grosse_pumpe_channel_1
+    grosse_lampe: switch.grosse_pumpe_channel_2
+    zeitplan_grosse_pumpe: schedule.zeitplan_grosse_pumpe
+    zeitplan_grosse_lampe: schedule.zeitplan_grosse_lampe
+    laufzeit_grosse_pumpe: sensor.grosse_pumpe_laufzeit_heute
+    laufzeit_grosse_lampe: sensor.grosse_pumpe_laufzeit_heute
+    min_laufzeit_grosse_pumpe: input_number.mindestlaufzeit_grosse_pumpe
+    min_laufzeit_grosse_lampe: input_number.mindestlaufzeit_grosse_lampe
+    leistung_grosse_pumpe: 150
+    leistung_grosse_lampe: 59
+    kleine_pumpe: switch.kleine_pumpe
+    kleine_lampe: switch.kleine_lampe
+    zeitplan_kleine_pumpe: schedule.zeitplan_kleine_pumpe
+    zeitplan_kleine_lampe: schedule.zeitplan_kleine_lampe
+    laufzeit_kleine_pumpe: sensor.kleine_pumpe_laufzeit_heute
+    laufzeit_kleine_lampe: sensor.kleine_pumpe_laufzeit_heute
+    min_laufzeit_kleine_pumpe: input_number.mindestlaufzeit_kleine_lampe
+    min_laufzeit_kleine_lampe: input_number.mindestlaufzeit_grosse_lampe
+    leistung_kleine_pumpe: 100
+    leistung_kleine_lampe: 50
+    solar_leistung: sensor.durchschnitt_leistung
