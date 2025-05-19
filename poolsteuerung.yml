@@ -173,8 +173,7 @@ actions:
       test2: "{{ input_laufzeit_kleine_pumpe }}"
       #benoetigte Geräte
       needed_devices: >
-        {% set array = namespace(entities=[]) %}
-        {% set array = namespace(off=[]) %}
+        {% set array = namespace(entities=[], off=[]) %}
         {% set energy = 0 %}
         {% if kleine_pumpe_needed and states(input_solarleistung) > input_leistung_kleine_pumpe %}
           {% set array.entities = array.entities + [kleine_pumpe] %}
@@ -206,4 +205,4 @@ actions:
       entity_id: array.entities
   - action: homeassistant.turn_off
     target:
-      entity_id: array.off
+      entity_id: array
