@@ -149,7 +149,7 @@ variables:
   input_leistung_kleine_lampe: !input leistung_kleine_lampe
   input_zeitplan_grosse_pumpe: !input zeitplan_grosse_pumpe
   input_zeitplan_grosse_lampe: !input zeitplan_grosse_lampe
-  imput_zeitplan_kleine_pumpe: !input zeitplan_kleine_pumpe
+  input_zeitplan_kleine_pumpe: !input zeitplan_kleine_pumpe
   input_zeitplan_kleine_lampe: !input zeitplan_kleine_lampe
   input_grosse_pumpe: !input grosse_pumpe
   input_grosse_lampe: !input grosse_lampe
