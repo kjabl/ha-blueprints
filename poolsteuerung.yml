@@ -142,7 +142,7 @@ variables:
   input_laufzeit_grosse_pumpe: !input laufzeit_grosse_pumpe
   input_laufzeit_grosse_lampe: !input laufzeit_grosse_lampe
   input_laufzeit_kleine_pumpe: !input laufzeit_kleine_pumpe
-  input_laufzeit_kleinelampe: !input laufzeit_kleine_lampe
+  input_laufzeit_kleine_lampe: !input laufzeit_kleine_lampe
   input_min_laufzeit_grosse_pumpe: !input min_laufzeit_grosse_pumpe
   input_min_laufzeit_grosse_lampe: !input min_laufzeit_grosse_lampe
   input_min_laufzeit_kleine_pumpe: !input min_laufzeit_kleine_pumpe
