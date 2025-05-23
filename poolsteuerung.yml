@@ -137,6 +137,8 @@ triggers:
       hours: 0
       minutes: 0
       seconds: 30
+  - trigger: time_pattern
+    minutes: "/5"
 
 variables:
   input_laufzeit_grosse_pumpe: !input laufzeit_grosse_pumpe
