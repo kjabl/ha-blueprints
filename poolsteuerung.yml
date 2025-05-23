@@ -213,4 +213,4 @@ actions:
       entity_id: "{{ needed_devices.entities }}"
   - action: homeassistant.turn_off
     target:
-      entity_id: "{{ needed_devices.off fix}}"
+      entity_id: "{{ needed_devices.off }}"
