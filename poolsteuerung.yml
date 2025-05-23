@@ -207,10 +207,40 @@ actions:
           {% set array.off = array.off + [input_grosse_pumpe] %}
           {% set array.off = array.off + [input_grosse_lampe] %}
         {% endif %}
-        {{ array }}
+        {{ array.entities }}
+      off_devices: >
+        {% set array = namespace(entities=[], off=[]) %}
+        {% set energy = 0 %}
+        {% if kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe) %}
+          {% set array.entities = array.entities + [input_kleine_pumpe] %}
+          {% set energy = energy + int(input_leistung_kleine_pumpe) %}
+          {% if kleine_lampe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_lampe) %}
+            {% set array.entities = array.entities + [input_kleine_lampe] %}
+            {% set energy = energy + int(input_leistung_kleine_lampe) %}
+          {% else %}
+            {% set array.off = array.off + [input_kleine_lampe] %}
+          {% endif %}
+        {% else %}
+          {% set array.off = array.off + [input_kleine_pumpe] %}
+          {% set array.off = array.off + [input_kleine_lampe] %}
+        {% endif %}
+        {% if grosse_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_grosse_pumpe) %}
+          {% set array.entities = array.entities + [input_grosse_pumpe] %}
+          {% set energy = energy + int(input_leistung_kleine_pumpe) %}
+          {% if kleine_lampe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_lampe) %}
+            {% set array.entities = array.entities + [input_grosse_lampe] %}
+            {% set energy = energy + int(input_leistung_grosse_lampe) %}
+          {% else %}
+            {% set array.off = array.off + [input_grosse_lampe] %}
+          {% endif %}
+        {% else %}
+          {% set array.off = array.off + [input_grosse_pumpe] %}
+          {% set array.off = array.off + [input_grosse_lampe] %}
+        {% endif %}
+        {{ array.off }}
   - action: homeassistant.turn_on
     target:
-      entity_id: "{{ needed_devices.entities }}"
+      entity_id: "{{ needed_devices }}"
   - action: homeassistant.turn_off
     target:
-      entity_id: "{{ needed_devices.off }}"
+      entity_id: "{{ off_devices }}"
