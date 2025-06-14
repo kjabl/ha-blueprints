@@ -187,7 +187,7 @@ actions:
       needed_devices: >
         {% set array = namespace(entities=[], off=[]) %}
         {% set energy = 0 %}
-        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(states(input_heizschwelle)) and states(input_poolheizung)) %}
+        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(input_heizschwelle) and states(input_poolheizung)) %}
           {% set array.entities = array.entities + [input_kleine_pumpe] %}
           {% set energy = energy + int(input_leistung_kleine_pumpe) %}
           {% if (kleine_lampe_needed and int(states(input_solarleistung)) > (int(input_leistung_kleine_lampe) + energy)) and not(states(input_poolheizung)) %}
@@ -217,7 +217,7 @@ actions:
       calc_energy: >
         {% set array = namespace(entities=[], off=[]) %}
         {% set energy = 0 %}
-        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(states(input_heizschwelle)) and states(input_poolheizung)) %}
+        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(input_heizschwelle) and states(input_poolheizung)) %}
           {% set array.entities = array.entities + [input_kleine_pumpe] %}
           {% set energy = energy + int(input_leistung_kleine_pumpe) %}
           {% if (kleine_lampe_needed and int(states(input_solarleistung)) > (int(input_leistung_kleine_lampe) + energy)) and not(states(input_poolheizung)) %}
@@ -247,7 +247,7 @@ actions:
       off_devices: >
         {% set array = namespace(entities=[], off=[]) %}
         {% set energy = 0 %}
-        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(states(input_heizschwelle)) and states(input_poolheizung)) %}
+        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(input_heizschwelle) and states(input_poolheizung)) %}
           {% set array.entities = array.entities + [input_kleine_pumpe] %}
           {% set energy = energy + int(input_leistung_kleine_pumpe) %}
           {% if (kleine_lampe_needed and int(states(input_solarleistung)) > (int(input_leistung_kleine_lampe) + energy)) and not(states(input_poolheizung)) %}
