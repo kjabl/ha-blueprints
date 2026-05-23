@@ -112,6 +112,11 @@ blueprint:
       selector:
         number:
           mode: box
+    skimmer_modus:
+      name: Skimmer Modus
+      selector:
+        entity:
+      description: Binary Sensor, der On ist, wenn der Skimmer laufen soll
 
 triggers:
   - trigger: state
@@ -134,6 +139,9 @@ triggers:
     from: "on"
     to: "off"
     id: grosse_lampe_aus_trigger
+  - trigger: state
+    entity_id: !input skimmer_modus
+    id: skimmer_modus_changed_trigger
   - trigger: template
     value_template: >-
       {{ states('sensor.durchschnitt_leistung') <
@@ -169,6 +177,7 @@ variables:
   input_solarleistung: !input solar_leistung
   input_poolheizung: !input poolheizung
   input_heizschwelle: !input heizschwelle
+  input_skimmer_modus: !input skimmer_modus
 
 actions:
   - variables:
@@ -187,7 +196,7 @@ actions:
       needed_devices: >
         {% set array = namespace(entities=[], off=[]) %}
         {% set energy = 0 %}
-        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(input_heizschwelle) and states(input_poolheizung)) %}
+        {% if ((kleine_pumpe_needed and int(states(input_solarleistung)) > int(input_leistung_kleine_pumpe)) and not(states(input_poolheizung))) or (int(states(input_solarleistung)) > int(input_heizschwelle) and states(input_poolheizung)) or states(input_skimmer_modus) %}
           {% set array.entities = array.entities + [input_kleine_pumpe] %}
           {% set energy = energy + int(input_leistung_kleine_pumpe) %}
           {% if (kleine_lampe_needed and int(states(input_solarleistung)) > (int(input_leistung_kleine_lampe) + energy)) and not(states(input_poolheizung)) %}
@@ -200,7 +209,7 @@ actions:
           {% set array.off = array.off + [input_kleine_pumpe] %}
           {% set array.off = array.off + [input_kleine_lampe] %}
         {% endif %}
-        {% if grosse_pumpe_needed and int(states(input_solarleistung)) > (int(input_leistung_grosse_pumpe) + energy) %}
+        {% if (grosse_pumpe_needed and int(states(input_solarleistung)) > (int(input_leistung_grosse_pumpe) + energy)) or states(input_skimmer_modus) %}
           {% set array.entities = array.entities + [input_grosse_pumpe] %}
           {% set energy = energy + int(input_leistung_kleine_pumpe) %}
           {% if kleine_lampe_needed and int(states(input_solarleistung)) > (int(input_leistung_kleine_lampe) + energy)%}
